@@ -1,0 +1,1 @@
+# Kommhalok2-jegyzet
