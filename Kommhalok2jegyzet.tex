@@ -14,6 +14,8 @@
 	urlcolor=blue,
 }
 \usepackage{graphicx}
+\usepackage{array}
+\usepackage{tabularx}
 \usepackage{geometry}
 \geometry{a4paper,
 	total={210mm,297mm},
@@ -587,7 +589,7 @@ nagyobb sebességből kevesebbet, a szorzat állandó
 	\hline 
 	kiterjesztés & van, növeli az adási sávszélességet & nincs \\ 
 	\hline 
-	ortogonalitás & tükéletes & nem tökéletes \\ 
+	ortogonalitás & tökéletes & nem tökéletes \\ 
 	\hline 
 	szinkronizáció & szükséges & nem szükséges \\ 
 	\hline 
@@ -1073,6 +1075,483 @@ Például:
 \begin{center}
 	\includegraphics[width=0.6\linewidth]{src/5gopciok}
 \end{center}
+\section{IPTV, Video on Demand}
+DVB (DIgital Video Broadcasting) rendszerek:
+\begin{itemize}
+	\item DVB-T – Terrestrial, azaz földfelszíni digitális sugárzás
+	\item DVB-C – Cable, digitális kábeltelevízió
+	\item DVB-S – Satellite, digitális műholdas műsorszórás
+\end{itemize}
+IP alapú műsorszórás
+\begin{itemize}
+	\item Internet Protocol Television (IPTV)
+	\item Internet TV
+\end{itemize}
+\subsection{IPTV = Internet TV?}
+Tartalom kötöttsége
+\begin{itemize}
+	\item Élő (lineáris) adás – specifikus sugárzási időpont
+\item Igény szerinti tartalom (Video on Demand) – tetszőleges
+időpont
+\end{itemize}
+Terjesztési modell
+\begin{itemize}
+	\item Menedzselt hálózaton, átviteli garanciák mellett, multicast
+kommunikáció (többesküldés)
+\item ublikus hálózaton, garanciák nélkül, unicast
+kommunikáció (egyesküldés)
+\end{itemize}
+Szolgáltatás kiterjedése
+\begin{itemize}
+	\item Országos, regionális, városi
+\item Globális
+\end{itemize}
+IPTV != Internet TV
+\begin{center}
+	\includegraphics[width=0.6\linewidth]{src/IPTVInternetTV}
+\end{center}
+\subsection{Internet TV}
+\textbf{Over-the-top (OTT) terjesztési modell}\\
+\textbf{VoD/live video} szolgáltatók: Youtube, Netflix, Hulu, TV.Go, stb.\\
+Valósidejű forgalmat \textbf{best effort (BE)} hálózaton kell továbbítani\\
+(nincs garancia az átvitel minőségére)\\
+\textbf{Unicast kliens-szerver modell:} nagy erőforrásigény (rossz
+skálázhatóság) – megoldás: \textbf{Content Delivery Network (CDN)}
+\subsubsection{Valósidejűség}
+Az IP protokoll best effort jellegű átvitelt valósít meg,
+mely során nem garantált, hogy …
+\begin{itemize}
+	\item az üzenet minden darabja megérkezik a címzetthez,
+	 sorrendhelyesen valósul meg az átvitel,
+	\item alacsony mértékű és alacsony ingadozású az átvitel
+	késleltetése a teljes útvonalon (end-to-end).
+	Az IP hálózatokban megjelent valósidejű
+	szolgáltatások jelentős része korábban dedikált
+	fizikai infrastruktúrán működött (pl. telefonhálózat,
+	kábel tv hálózat, videókonferencia rendszer, stb.).
+	\item A dedikált hálózatok műszaki paraméterei a
+	szolgáltatás jellegéhez igazodtak, magas
+	rendelkezésre állást biztosítottak.
+	\item A kedvező kiépítési és üzemeltetési költségek,
+	valamint a rugalmas konfigurálhatóság hatására a
+	legtöbb interaktív szolgáltatás ma már jellemzően IP
+	feletti szolgáltatásként érhető el.
+\end{itemize}
+\textbf{Megoldás}: Műszakilag fenntartható megoldást kell adni az új
+alkalmazások átviteli követelményeire.
+\begin{itemize}
+	\item Az IP útválasztók eredendően demokratikus (FIFO
+	jellegű) csomagtovábbítási mechanizmusát új
+	mechanizmusok váltották fel: különböző
+	forgalomtípusok igényeinek dinamikus kiszolgálása
+	\item A szolgáltatás minőségének megfelelő szinten
+	tartásához a hálózat forgalmát osztályozni kell és az
+	erőforrásokat az osztályok között fel kell osztani:
+	Quality of Service (QoS)
+	\item Cél: átviteli garanciák végponttól végpontig
+\end{itemize}
+\subsubsection{Forgalmi mintázat}
+\textbf{On-demand tartalom:}
+\begin{itemize}
+	\item Jellemző a hosszabb, de nem túl hosszú
+	időszegmensek (5-15 s) előtöltése (prefetch).
+	\item A médiatartalom nagyobb darabokban (chunkokban) érkezik a végponthoz
+	\item Tipikusan TCP szállítási protokoll
+\end{itemize}
+	\textbf{Élő tartalom}
+	\begin{itemize}
+		\item Rövidebb előtöltés (100-500 ms)
+		\item Folyamatos forgalmazás (nem chunk-os, közel
+		fix csomagráta)
+		\item TCP vagy UDP/RTP szállítási protokollok
+	\end{itemize}
+\subsection{Szállítási protokoll (RTP vs TCP)}
+	\textbf{Élő médiatartalom átviteléhez:}
+Szükség van:
+	\begin{enumerate}
+		\item Sorrendtartásra (szekvenciaszám)
+		\item Időzítésre (időbélyeg)
+		\item Alacsony késleltetésre
+	\end{enumerate}
+Nincs szükség:
+	\begin{enumerate}
+		\item Újraküldésre
+		\item Torlódásszabályozásra
+	\end{enumerate}
+Az IPTV szolgáltatás elterjedése
+\begin{itemize}
+	\item Jellemzően távközlési szolgáltatók saját
+	hálózatukban, saját előfizetőik számára nyújták
+	\item A hagyományos távbeszélő szolgáltatásokból
+	egyre kevesebb bevétel származik, ezért új
+	szolgáltatásokkal kell az ügyfeleket fogyasztásra
+	ösztönözni
+	\item Ehhez a meglévő infrastruktúrán is működnie
+	kell a szolgáltatásnak (Triple Play)
+\end{itemize}
+\subsection{IPTV szolgálatások}
+\begin{enumerate}
+	\item Élő TV és rádió adás továbbítása IP hálózaton
+	\item Digital Rights Management (DRM)
+	\item Electronic Program Guide (EPG) – műsorújság
+	\item Teletext
+	\item Élő adás felvétele: kliens-oldalon (set-top-box) vagy szerver-oldalon
+	(Catch up TV)
+	\item Kép a képben (PiP)
+	\item Time shifting
+	\item Egyidőben több felvétel + élő adás (az internet szolgáltatás
+	sávszélessége korlát lehet)
+	\item Programozott felvétel műsorújság alapján
+	\item Video on Demand – videótéka (TV műsorok, filmek, sorozatok, stb.)
+	\item Alkalmazások futtatása (hírek, időjárás, árfolyamok, messaging,
+	stb.) 
+\end{enumerate}
+\subsection{IPTV architektúra}
+\begin{center}
+	\includegraphics[width=0.6\linewidth]{src/IPTV}
+\end{center}
+\textbf{A rendszer elemei:} TV fejállomás, VoD kiszolgáló, Transzport hálózat, Home gateway, Set-top-box\\
+A szolgáltató saját hálózatában
+szolgáltatásminőségi \textbf{(QoS)}
+garanciákat biztosít a
+médiafolyam továbbításához\\
+\textbf{Skálázhatóság}: multicast
+továbbítási modell
+\begin{center}
+	\includegraphics[width=0.6\linewidth]{src/IPTVmodell}
+\end{center}
+\subsection{Szolgáltatás minősége}
+\begin{center}
+	\includegraphics[width=0.6\linewidth]{src/Mediaminoseg}
+\end{center}
+\subsection{Fejállomás vázlatos felépítése}
+\begin{center}
+	\includegraphics[width=0.6\linewidth]{src/IPTVarch}
+\end{center}
+\begin{itemize}
+	\item \textbf{Content aggregation:} műsorfolyamok összegyűjtése különböző forrásokból.
+	A tartalom szolgáltatója (jellemzően a TV társaság) többféle technológiával
+	is eljuttathatja a műsort az IPTV szolgáltatónak: DVB-T (Digital Video
+	Broadcasting - Terrestrial - földfelszíni digitális TV), DVB-S (Digital Video
+	Broadcasting - Satellite, műholdas digitális TV), SDI (Serial Digital
+	Interface), ASI (Asynchronous Serial Interface)
+	\item \textbf{Media transcoding:} a médiafolyam (kép és hang) újrakódolása az IPTV
+	rendszer követelményeinek megfelelően: sávszélesség-igény, kulcs
+	videókeretek gyakorisága, felbontás, stb.
+	\item \textbf{IP Scrambler:} Az újrakódolt médiafolyamból IP hálózaton továbbítható
+	adatcsomagok készítése: \\IP/UDP/RTP/MPEG-2 TS/ES beágyazás
+	\item \textbf{CAS/DRM (Conditional Access System/Digital Rights Management):}
+	hozzáférés-szabályozást (adott előfizető melyik csatornához, illetve ondemand tartalomhoz férhet hozzá), valamint a digitális tartalmak jogi és
+	technikai védelmét megvalósító alrendszerek
+\end{itemize}
+\subsection{IPTV médiafolyam}
+\begin{center}
+	\begin{tabularx}{\linewidth}{|c|X|X|}
+	\hline 
+	Tulajdonságok & Standard Definition & High Definition \\ 
+	\hline 
+	\hline
+	Sávszélesség-igény & 1,6 - 2,2 Mbit/s & 7 - 9 Mbit/s \\ 
+	\hline 
+	Képfelbontás & 720 x 576 px & 1920 (1440) x 1080 px \\ 
+	\hline 
+	Videókódoló  & \multicolumn{2}{c|}{ITU-T H.264 /
+		ISO/IEC 14496-10 (MPEG-4 Part 10, AVC)} \\ 
+	\hline 
+	Hangkódoló  & \multicolumn{2}{c|}{MPEG AAC/AC3} \\ 
+	\hline 
+	Médiakonténer & \multicolumn{2}{c|}{ITU-T H.222.0 /
+		ISO/IEC 13818-1 (MPEG-2 Transport Stream)} \\ 
+	\hline 
+	Szállítási protokoll  & \multicolumn{2}{c|}{IETF RFC 3550
+		Real-time Transport Protocol (RTP) } \\ 
+	\hline 
+	Továbbítási modell & \multicolumn{2}{c|}{IP multicast} \\ 
+	\hline 
+\end{tabularx} 
+\end{center}
+\subsubsection{Protokoll készlet}
+	\begin{itemize}
+		\item IPv4/IPv6
+		\item IGMPv3/MLDv2/PIM
+		\item UDP
+		\item RTP/RTCP
+		\item MPEG-2 Transport Stream
+		\item PES
+	\end{itemize}
+Médiakódolás:
+	\begin{itemize}
+		\item H.264/H.265 (videókódoló)
+		\item MPEG AAC (hangkódoló) 
+	\end{itemize}
+\subsubsection{Multicast IP címek}
+\begin{itemize}
+	\item Multicast üzenettovábbításra: 224.0.0.0/4 (D osztályú)
+	címtartomány (1. octet: 1110xxxx.)
+	\item Egy multicast cím csomópontok egy jól definiált
+	csoportját azonosítja: multicast csoport
+	\item A csoporttagság dinamikus
+	\item IPTV rendszerekben egy multicast IP cím egy adott TV
+	csatorna aktív nézőit azonosítja a hálózaton
+	\item A TV-műsor médiafolyamát a hozzá rendelt D osztályú
+	IP címmel rendelkező csoport tagjainak továbbítja a 
+\end{itemize}
+\subsection{IGMP - Internet Group Management Protocol}
+Az IGMP kommunikációs protokoll alkalmazásával az IP végpontok és
+útválaszók a multicast csoportagságokat menedzselhetik. Az IGMP
+üzenetváltás a végpont és egy szomszédos multicast útválasztó között
+zajlik. Az üzenetek közvetlenül IPv4 csomagokba ágyazódnak be.
+Rétegbesorolást tekintve az ICMP-hez hasonlóan az IP protokollkészlet
+része, a hálózati rétegben működik. 
+\begin{itemize}
+	\item Multicast csoporttagságok menedzsmentje hálózaton
+	belül
+	\item IGMP üzenetváltás: IP végpontok és a helyi útválasztó
+	között
+	\item OSI besorolás: az IP protokollkészlet része, a hálózati
+	réteghez tartozik
+	\item Szereplők: IGMP host – IGMP querier
+\end{itemize}
+\begin{center}
+	\includegraphics[width=0.6\linewidth]{src/IGMP}
+\end{center}
+\subsubsection{Query/Report}
+\begin{itemize}
+	\item \textbf{Membership Query} - Csomópontok
+	multicast csoportagságát kérdezi le a
+	hálózathoz kapcsolódó útválasztó
+	(IGMP querier).
+	\item  \textbf{Membership Report} – Tagság(-ok) jelentése a multicast útválasztó
+	(IGMP querier) felé. A csomópont ugyanezzel az üzenettel tud
+	feliratkozni egy multicast csoportba. 
+\end{itemize}
+\subsubsection{IGMPv2/v3}
+v2 változat: explicit csoportelhagyás (leave group)\\
+v3 változat: forrás-specifikus multicast csoportok\\
+\begin{itemize}
+	\item Megadhatunk a forráscsomópont címére vonatkozó
+megkötéseket (szűréseket):
+\subitem Include mode
+\subitem Exclude mode
+\end{itemize}
+A forrás megkötésével megelőzhetőek a jogosulatlan
+forrásból származó Denial-of-Service támadások.
+\\~\\
+IPTV rendszerekben jellemzően az IGMPv2 vagy IGMPv3-as verziókat
+alkalmazzák. Az IGMPv2 előnye, hogy a Leave Group üzenet lehetővé
+teszi, hogy a multicast router alacsony késleltetéssel le tudja állítani az adott
+csoport címére küldött forgalmat, amennyiben nincs aktív tagja egy adott
+hálózati szegmensben.
+\subsection{Multicast IP útválasztás, PIM}
+Protocol Independent Multicast (PIM) nem egyetlen protokoll, hanem egy multicast útválasztási
+protokollcsalád. Három változata terjedt el.
+\begin{itemize}
+\item PIM Sparse mode (SM)
+\subitem A multicast fát, melynek gyökere az ú.n.
+Rendezvous-point (RP) útválasztó, explicit IGMP kérések alapján építi fel a
+protokoll. A működési modell jó illeszkedik a WAN hálózati környezetben,
+fizikailag elszórt multicast vevők kiszolgálásához. 
+\item PIM Dense mode (DM)
+\subitem Első lépésben a multicast forgalmat
+elárasztással továbbítja a teljes hálózaton, később pedig IGMP üzenetek
+alapján felfüggeszti a továbbítást azokba a hálózati szegmensekbe,
+amelyekben nincs aktív vevő. Ezzel a módszerrel implicit építi fel a multicast
+fát a protokoll. A működés első fázisában megvalósított elárasztásos
+továbbítás intenzív sávszélesség-igénye miatt a protokoll nagy kiterjedésű
+hálózatokra rosszul skálázható. 
+\item PIM Source-specific multicast (SSM)
+\subitem - A multicast fa gyökere egy előre
+definiált forrás csomópont (pl. egy IPTV headend). A multicast csoport
+megadása a forrás-/csoportazonosító párossal történik: (S,G), ahol S a
+forrás unicast IP címe, G pedig a csoportot azonosító multicast IP cím. A
+forrás címének explicit megadásával megelőzhetőek a csoporton belüli, jogosulatlan forrástól származó Denial-of-Service támadások. 
+\end{itemize}
+IPTV rendszerben: SM és SSM
+\begin{center}
+	\includegraphics[width=0.6\linewidth]{src/PIM}
+\end{center}
+\subsubsection{PIM SM és SSM}
+\begin{itemize}
+	\item Sparse mode: A multicast fát, melynek gyökere az ú.n.
+	Rendezvous-point (RP) útválasztó, explicit IGMP kérések
+	alapján építi fel a protokoll (pull modell).
+	A működési modell jó illeszkedik a WAN hálózati
+	környezetben, fizikailag elszórt multicast vevők
+	kiszolgálásához.
+	\item Source-specific: A multicast fa gyökere egy előre definiált
+	forrás csomópont. A multicast csoport megadása a forrás-
+	/csoportazonosító párossal történik: (S,G)
+\end{itemize}
+\subsubsection{IGMP Snooping}
+\begin{center}
+	\includegraphics[width=0.5\linewidth]{src/IGMPsnooping}
+\end{center}
+\subsection{RTP (Real-time Transport Protocol)}
+Dedikált transport protokoll valósidejű médiaátvitel támogatására: IETF RFC 3550
+Alkalmazási területek:
+\begin{itemize}
+	\item VoIP
+\item Videókonferencia
+\item IPTV
+\item Streaming audio és video
+\end{itemize}
+\subsubsection{RTP szolgáltatások}
+\begin{itemize}
+	\item Kezeli a hálózati csomagátrendeződést,
+	\item időzítést biztosít az üzenetdarabok megfelelő
+	időben történő lejátszásához (jitter
+	kompenzáció),
+	\item hang és képi tartalmak továbbítására egyaránt
+	alkalmas.
+	\item IP multicast támogatása
+	\item Alkalmazás-szintű keretezésen alapul
+	(Application-level Framing, ALF)
+\end{itemize}
+\begin{center}
+	\includegraphics[width=0.5\linewidth]{src/RTPheader}
+\end{center}
+\subsection{MPEG-2 Transport Stream}
+Szabvános konténer formátum mozgókép, hang és
+program-, illetve szolgáltatás-információs üzenetek
+(műsorújság, teletext, feliratok, stb.) multiplexelt
+továbbítására.
+\begin{itemize}
+	\item Szabvány hivatalos elnevezése: ISO/IEC 13818-1
+	\item Felhasználási terület: DVB, IPTV
+	\item Egy TS-ben több elemi médiafolyam
+	\item Több hangsáv egyidejű továbbítása
+	\item Szinkronizáció az elemi folyamok között (pl. hang, kép,
+	felirat)
+	\item PID (packet identifier) – minden elemi folyam egyedi
+	azonosítóval rendelkezik
+\end{itemize}
+\subsubsection{MPEG-2 információs táblák}
+\textbf{TV csatorna = Program}
+\begin{itemize}
+	\item Program Association Table (PAT): A transport
+	streamben továbbított csatornák (programok) azonosítóit
+	tartalmazó tábla.
+	\item Program Map Table (PMT): Az egyes programokhoz
+	tartozó elemi folyamok PID azonosítóit tartalmazó tábla.
+	\item Event Info Table (EIT): Az EPG alrendszer az EIT tábla
+	információi alapján készíti el a műsorújságot.
+	\item Program Clock Reference (PCR): Az elemi folyamok
+	szinkronizációjára használt referencia-óra. 
+\end{itemize}
+\subsubsection{Médiakódolás}
+\textbf{Időszegmensek kódolása}
+\begin{itemize}
+	\item Constant Bitrate (CBR) üzemmód
+	A médiakódoló a kimenetén konstans bitrátával állítja elő a
+	tömörített médiafolyamot.
+	Ebben az üzemmódban a médiatartalom pillanatnyi
+	komplexitásától független az aktuális tömörítési ráta.
+	\item Variable Bitrate (VBR) üzemmód
+	A médiakódoló a kimenetén a médiatartalom
+	komplexitásával arányos, változó rátával állítja elő a
+	tömörített médiafolyamot.
+\end{itemize}
+\subsection{H.264}
+\begin{itemize}
+	\item Veszteséges tömörítési eljárás
+	\item Konstans vagy változó bitráta
+	\item YCbCr színtér
+	\item Profilok és szintek
+	\item Képcsoportok (Group of Pictures)
+	\item Mb-Slice-frame kapcsolat
+	\item I-slice, P-slice és B-slice
+	\item Makroblokkok
+	\item Flexible macroblock ordering (FMO)
+	\item Arbitrary slice ordering (ASO)
+\end{itemize}
+\textbf{Építőkövek:} Slice, Picture\\
+Egy képkocka több szeletre \textbf{(slice)} osztható. A makroblokk \textbf{(MB)} diszkrét
+koszinusz transzformáción (DCT) alapuló képi feldolgozási egység, mely
+változó méretű blokkokból áll: 16x16, 16x8, 8x8, 8x4, 4x4.
+
+\subsubsection{H.264 kerettípusok}
+\begin{itemize}
+	\item I-frame (intra coded frame)
+	A képkocka előállításához nincs szükség
+	további keretekre. A képcsoport kezdő kerete.
+	\item P-frame (predictive coded picture)
+	Korábbi I vagy P keretet használ referenciaként,
+	a változást mozgásvektorokkal írja le.
+	\item B-frame (bi-predictive coded picture)
+	Korábbi és későbbi I vagy P kereteket is
+	felhasznál referenciaként.
+\end{itemize}
+\subsubsection{H.264 kódolású folyam makroszerkezete}
+\begin{itemize}
+	\item Meghatározható, hogy adott IP csomag milyen
+	típusú videó-keretet tartalmaz.
+	\item Egy H.264 kódolású adatfolyam Group Of
+	Pictures (GOP) blokkokra osztható.
+	\item Minden GOP I-frame-mel kezdődik, melyet előre
+	definiált sorrendben P és B-frame-ek követnek.
+	\item Új I-frame a következő GOP kezdetét jelzi.
+\end{itemize}
+\begin{center}
+	\includegraphics[width=0.6\linewidth]{src/GOPszerk}
+\end{center}
+\subsection{Ssolgáltatás minőség mérése}
+\begin{itemize}
+	\item Az átvitt média érzeti minőségét befolyásoló IP-szintű
+	elemi hálózati metrikák:
+	\subitem Késleltetés (delay, ms)
+	\subitem Késleltetés ingadozása (jitter, ms)
+	\subitem Csomagvesztés (packet loss, %)
+	\subitem Csomagsorrend átrendeződés (packet reordeing, %)
+	\subitem Átviteli teljesítmény (throughput, bps)
+	\item Az átvitt média érzeti minőségét befolyásoló összetett
+	hálózati metrikák:
+	\subitem MDI (media delivery index) – kettős metrika
+	\subsubitem késleltetési tényező (delay factor)
+	\subsubitem média veszteségi ráta (media loss rate)
+	\item Egyéb szolgáltatási minőséget befolyásoló metrikák:
+	\subitem Csatornaváltási idő (zap time)
+	\subitem EPG betöltési idő
+\end{itemize}
+\subsubsection{Jitter és átrendeződés}
+A médiakódolók meghatározott rátával, adott sorrendben
+küldik a médiacsomagokat, ezzel szemben a videó- és
+hangfolyamok IP csomagjai a hálózat működéséből
+adódóan nem fix késleltetéssel és nem feltétlenül garantált
+sorrendben jutnak el a forrástól a címzettig
+\subsubsection{Kulcskeretet érintő csomagvesztés}
+\begin{itemize}
+	\item Két képcsoportot
+	(GOP) tartalmazó
+	videó minta
+	\item A második GOP
+	kulcs-keretének
+	eldobása
+	\item A második GOP-ban
+	megjelenő mozgásvektorok nem
+	releváns képi
+	elemeket mozgatnak
+\end{itemize}
+\subsubsection{De-jitter puffer}
+\begin{itemize}
+	\item A pufferbe változó időközökkel érkező csomagok fix
+	rátával kerülnek kiolvasásra onnan: késleltetlési
+	ingadozás kiegyenlítése
+	\item  Negatív hatása: megnöveli a késleltetést, melyet valós
+	idejű alkalmazásoknál kívánatos alacsony szinten
+	tartani.
+	\item  Fontos tervezési szempont a pufferméret helyes
+	megválasztása a hálózati jitter és az elvárt késleltetés
+	ismeretében.
+	\item  IPTV set-top-box jellemző puffermérete: 80-200 ms
+\end{itemize}
+\subsection{Csatornaváltás (Zap Time)}
+A váltás idejét meghatározó faktorok:
+\begin{itemize}
+	\item Csoportváltás (IGMP leave és join)
+	\item  Multicast disztribúciós fa bővítése (PIM routing)
+	\item  Végponti pufferelés (playout buffering)
+	\item  Következő kulcs videókeret (I frame) bevárása
+\end{itemize}
 \section{Rövidítések}
 \begin{multicols}{2}
 	\begin{minipage}{0.45\textwidth}
@@ -1102,32 +1581,32 @@ Például:
 		\end{itemize}
 	\end{itemize}
 	\end{minipage}
-\begin{itemize}
-	\item Hálózati elemek
-\begin{itemize}
-	\item eNodeB = evolved NodeB, bázisállomás
-\item SGW = Serving Gateway
-\item PGW = Packet Gateway
-\item MME = Mobility Management Entity
-\item HSS = Home Subscriber Server
-\item IMS = IP Multimedia Subsystem
-\item ePDG = Evolved Packet Data Gateway
-\item AAA = Authentication, Authorization,Accounting
-\end{itemize}
-\item Hordozók, alagutak, minőségbiztosítás
-\begin{itemize}
-	\item \item APN = Access Point Name
-\item QoS = Quality of Service
-\item QCI = QoS Class Identifier
-\end{itemize}
-\item 5G
-\begin{itemize}
-	\item CUPS = Control and User Plane Separation
-\item SBA = Service Based Architecture
-\item NFV = Network Function Virtualization
-\item SDN = Software Defined Networking
-\end{itemize}
-\end{itemize}
+	\begin{itemize}
+		\item Hálózati elemek
+		\begin{itemize}
+			\item eNodeB = evolved NodeB, bázisállomás
+			\item SGW = Serving Gateway
+			\item PGW = Packet Gateway
+			\item MME = Mobility Management Entity
+			\item HSS = Home Subscriber Server
+			\item IMS = IP Multimedia Subsystem
+			\item ePDG = Evolved Packet Data Gateway
+			\item AAA = Authentication, Authorization,Accounting
+		\end{itemize}
+			\item Hordozók, alagutak, minőségbiztosítás
+		\begin{itemize}
+			\item \item APN = Access Point Name
+			\item QoS = Quality of Service
+			\item QCI = QoS Class Identifier
+		\end{itemize}
+			\item 5G
+		\begin{itemize}
+			\item CUPS = Control and User Plane Separation
+			\item SBA = Service Based Architecture
+			\item NFV = Network Function Virtualization
+			\item SDN = Software Defined Networking
+		\end{itemize}
+	\end{itemize}
 \end{multicols}
 \begin{thebibliography}{9}
 	\bibitem{kh2} 
